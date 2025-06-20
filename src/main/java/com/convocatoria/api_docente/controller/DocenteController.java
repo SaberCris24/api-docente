@@ -17,8 +17,12 @@ public class DocenteController {
     private DocenteService docenteService;
 
     @PostMapping
-    public ResponseEntity<Docente> crearDocente(@RequestBody Docente docente) {
-        return new ResponseEntity<>(docenteService.crearDocente(docente), HttpStatus.CREATED);
+    public ResponseEntity<?> crearDocente(@RequestBody Docente docente) {
+        try {
+            return new ResponseEntity<>(docenteService.crearDocente(docente), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -36,8 +40,12 @@ public class DocenteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarDocente(@PathVariable("id") Long id) {
-        docenteService.eliminarDocente(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> eliminarDocente(@PathVariable("id") Long id) {
+        try {
+            docenteService.eliminarDocente(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {"numeroDocumento", "tipoDocumento"})
+)
 public class Docente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

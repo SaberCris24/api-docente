@@ -15,6 +15,11 @@ public class DocenteService {
     private DocenteRepository docenteRepository;
 
     public Docente crearDocente(Docente docente) {
+        Optional<Docente> existente = docenteRepository.findByNumeroDocumentoAndTipoDocumento(
+                docente.getNumeroDocumento(), docente.getTipoDocumento());
+        if (existente.isPresent()) {
+            throw new IllegalArgumentException("Ya existe un docente con ese tipo y número de documento");
+        }
         return docenteRepository.save(docente);
     }
 
@@ -35,6 +40,9 @@ public class DocenteService {
     }
 
     public void eliminarDocente(Long id) {
+        if (!docenteRepository.existsById(id)) {
+            throw new IllegalArgumentException("El docente con id " + id + " no existe");
+        }
         docenteRepository.deleteById(id);
     }
 }
