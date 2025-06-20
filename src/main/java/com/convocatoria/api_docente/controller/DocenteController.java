@@ -18,11 +18,13 @@ public class DocenteController {
 
     @PostMapping
     public ResponseEntity<?> crearDocente(@RequestBody Docente docente) {
-        try {
-            return new ResponseEntity<>(docenteService.crearDocente(docente), HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        // If the request body contains an id, reject the request
+        if (docente.getId() != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se puede establecer el id del docente al crear uno nuevo");
         }
+        Docente nuevoDocente = docenteService.crearDocente(docente);
+        return new ResponseEntity<>(nuevoDocente, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -31,7 +33,12 @@ public class DocenteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Docente> actualizarDocente(@PathVariable("id") Long id, @RequestBody Docente docente) {
+    public ResponseEntity<?> actualizarDocente(@PathVariable("id") Long id, @RequestBody Docente docente) {
+        // Check if the request body contains an id and if it matches the path variable
+        if (docente.getId() != null && !docente.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se puede editar el id del docente");
+        }
         Docente docenteActualizado = docenteService.actualizarDocente(id, docente);
         if (docenteActualizado != null) {
             return new ResponseEntity<>(docenteActualizado, HttpStatus.OK);
